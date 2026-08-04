@@ -36,6 +36,16 @@
 2. 点击左下角 **⚙ 设置** → **添加厂商**，选择接口类型，填写名称、Base URL、API Key 和模型。
 3. 回到主界面，选择厂商和模型，在下方输入消息发送。
 
+### 解决跨域（CORS）问题
+
+纯前端网页直连第三方大模型 API 会因 CORS 被浏览器拦截，报 `Failed to fetch`。仓库内置了一个 Cloudflare Pages Functions 代理，部署后填写代理地址即可解决：
+
+1. 把仓库部署到 Cloudflare Pages（`functions/` 目录会随之自动生效）。
+2. 打开页面 **⚙ 设置**，在顶部「代理地址」填入：`https://你的项目名.pages.dev/api/proxy`
+3. 保存后重新发送消息即可。
+
+> 代理转发逻辑与厂商无关，可同时服务 OpenAI 兼容、Anthropic、Gemini 三种接口。本地直接打开 `index.html` 时不受 CORS 限制，代理地址可留空。
+
 ### API Key 安全提示
 
 API Key 仅保存在你本地浏览器的 `localStorage` 中，不会上传到任何服务器。请勿在共享电脑上保存敏感密钥，导出文件也请妥善保管。

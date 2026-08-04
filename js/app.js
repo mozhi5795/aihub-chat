@@ -31,6 +31,7 @@
     pBaseUrl: $('#p-base-url'),
     pApiKey: $('#p-api-key'),
     pModels: $('#p-models'),
+    proxyUrl: $('#proxy-url'),
     toast: $('#toast'),
   };
 
@@ -414,6 +415,7 @@
   function openSettings() {
     state.editingProviderId = null;
     els.modal.classList.remove('hidden');
+    els.proxyUrl.value = state.settings.proxyUrl || '';
     renderProviderList();
     els.providerForm.reset();
     els.formTitle.textContent = '厂商配置';
@@ -594,6 +596,12 @@
   els.btnCloseSettings.addEventListener('click', closeSettings);
   els.modal.addEventListener('click', (e) => {
     if (e.target === els.modal) closeSettings();
+  });
+
+  els.proxyUrl.addEventListener('change', () => {
+    state.settings.proxyUrl = els.proxyUrl.value.trim();
+    Store.saveSettings(state.settings);
+    showToast('代理地址已保存');
   });
 
   els.btnAddProvider.addEventListener('click', () => {

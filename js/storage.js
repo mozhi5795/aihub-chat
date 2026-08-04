@@ -11,6 +11,7 @@ const Store = {
     return {
       providers: [],
       activeProviderId: null,
+      proxyUrl: '',
     };
   },
 
@@ -22,6 +23,7 @@ const Store = {
       return {
         providers: Array.isArray(data.providers) ? data.providers : [],
         activeProviderId: data.activeProviderId || null,
+        proxyUrl: data.proxyUrl || '',
       };
     } catch (e) {
       console.warn('读取设置失败', e);

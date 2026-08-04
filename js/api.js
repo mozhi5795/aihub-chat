@@ -62,13 +62,23 @@ const Api = (() => {
       body = JSON.stringify({ model, messages, stream: true });
     }
 
-    const resp = await fetch(requestUrl, {
-      method: 'POST',
-      headers,
-      body,
-      signal,
-    });
-
+    let resp;
+    const proxyUrl = (Store.loadSettings().proxyUrl || '').trim();
+    if (proxyUrl) {
+      resp = await fetch(proxyUrl.replace(/\/+$/, ''), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUrl: requestUrl, method: 'POST', headers, body }),
+        signal,
+      });
+    } else {
+      resp = await fetch(requestUrl, {
+        method: 'POST',
+        headers,
+        body,
+        signal,
+      });
+    }
     if (!resp.ok) {
       let detail = '';
       try {
