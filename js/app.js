@@ -216,8 +216,9 @@
     }
 
     els.messageList.appendChild(wrap);
+    let cursor = null;
     if (isStreaming) {
-      const cursor = document.createElement('span');
+      cursor = document.createElement('span');
       cursor.className = 'cursor';
       bubble.appendChild(cursor);
     }
