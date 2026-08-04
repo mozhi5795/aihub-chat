@@ -44,6 +44,8 @@
     streaming: false,
   };
 
+  const STREAM_TIMEOUT_MS = 90000;
+
   // ---------- utils ----------
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -198,7 +200,12 @@
 
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
-    bubble.textContent = msg.content || ' ';
+    if (isStreaming) {
+      bubble.textContent = '正在生成…';
+      bubble.classList.add('stream-placeholder');
+    } else {
+      bubble.textContent = msg.content || ' ';
+    }
     col.appendChild(bubble);
     wrap.appendChild(col);
 
@@ -295,7 +302,11 @@
 
   async function sendMessage() {
     const text = els.messageInput.value.trim();
-    if (!text || state.streaming) return;
+    if (!text) return;
+    if (state.streaming) {
+      showToast('正在生成中，请稍候或点击"停止"');
+      return;
+    }
     const conv = getConversation();
     const provider = getActiveProvider();
     if (!provider) {
@@ -323,15 +334,18 @@
     state.streaming = true;
     els.btnSend.disabled = true;
     els.btnStop.hidden = false;
-    setStatus(`正在使用 ${provider.name} / ${state.activeModel} 生成…`);
     els.btnStop.disabled = false;
+    setStatus(`正在使用 ${provider.name} / ${state.activeModel} 生成…`);
 
     let acc = '';
     try {
+      const timeoutSignal = AbortSignal.timeout(STREAM_TIMEOUT_MS);
+      const signal = AbortSignal.any([state.abortController.signal, timeoutSignal]);
       await Api.send(provider, state.activeModel, history, {
-        signal: state.abortController.signal,
+        signal,
         onDelta: (delta) => {
           acc += delta;
+          if (node.cursor) node.cursor.remove();
           node.bubble.textContent = acc;
           els.messageList.scrollTop = els.messageList.scrollHeight;
           updateMessageContent(conv, aiMsg, acc);
@@ -342,18 +356,21 @@
       updateMessageContent(conv, aiMsg, aiMsg.content);
       setStatus('');
     } catch (err) {
-      if (err.name === 'AbortError') {
-        if (node.cursor) node.cursor.remove();
+      if (node.cursor) node.cursor.remove();
+      if (err.name === 'TimeoutError') {
+        aiMsg.content = acc || '(请求超时)';
+        updateMessageContent(conv, aiMsg, aiMsg.content);
+        appendMessage(conv, 'error', `请求超时：${STREAM_TIMEOUT_MS / 1000} 秒内无响应`);
+      } else if (err.name === 'AbortError') {
         aiMsg.content = acc || '(已停止)';
         updateMessageContent(conv, aiMsg, aiMsg.content);
         setStatus('已停止生成');
       } else {
-        if (node.cursor) node.cursor.remove();
         aiMsg.content = acc || '';
         updateMessageContent(conv, aiMsg, aiMsg.content);
         appendMessage(conv, 'error', `请求失败：${err.message}`);
-        setStatus('');
       }
+      setStatus('');
     } finally {
       state.streaming = false;
       state.abortController = null;

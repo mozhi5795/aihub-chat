@@ -251,6 +251,8 @@ body {
   animation: blink 1s step-start infinite;
 }
 
+.bubble.stream-placeholder { color: var(--text-muted); }
+
 @keyframes blink { 50% { opacity: 0; } }
 
 /* ---------- Composer ---------- */
@@ -262,9 +264,9 @@ body {
 
 .composer-status {
   font-size: 12px;
-  color: var(--text-muted);
   min-height: 18px;
   margin-bottom: 6px;
+  color: var(--primary);
 }
 
 #message-input {
