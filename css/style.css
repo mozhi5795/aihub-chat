@@ -201,16 +201,15 @@ body {
   font-weight: 600;
 }
 
-.message.user { flex-direction: row-reverse; }
+.message.user { justify-content: flex-end; }
 .message.user .avatar { background: var(--user-bubble); }
 .message.ai .avatar { background: #10a37f; }
 .message.error .avatar { background: var(--danger); }
 
-.message .col { flex: 1; min-width: 0; }
-.message.user .col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+.message .col {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 85%;
 }
 
 .message .bubble {
@@ -223,8 +222,7 @@ body {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
   width: fit-content;
-  max-width: 85%;
-  min-width: 0;
+  max-width: 100%;
 }
 
 .message.user .bubble { background: var(--user-bubble); color: #fff; }

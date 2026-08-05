@@ -198,7 +198,7 @@
     avatar.textContent = msg.role === 'user' ? '我' : 'AI';
 
     const col = document.createElement('div');
-    col.style.cssText = 'flex:1;min-width:0;';
+    col.style.cssText = 'min-width:0;';
 
     const meta = document.createElement('div');
     meta.className = 'meta';
