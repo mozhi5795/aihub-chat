@@ -60,6 +60,13 @@ const Store = {
     else localStorage.removeItem(this.KEYS.activeId);
   },
 
+  normalizeProxyUrl(url) {
+    let s = (url || '').trim().replace(/\/+$/, '');
+    if (!s) return '';
+    if (!/\/api\/proxy$/i.test(s)) s += '/api/proxy';
+    return s;
+  },
+
   exportAll() {
     return {
       app: 'aihub-chat',

@@ -57,10 +57,10 @@
       </div>
       <div class="modal-body">
         <div class="proxy-bar">
-          <label>代理地址（可选，用于解决跨域 CORS。填入 Cloudflare Pages Functions 的地址即可，留空则直连厂商）
-            <input type="text" id="proxy-url" placeholder="https://你的项目.pages.dev/api/proxy">
+          <label>代理地址（可选，用于解决跨域 CORS。只需粘贴你的网站地址，自动补全 <code>/api/proxy</code>）
+            <input type="text" id="proxy-url" placeholder="例如：https://www.test.com">
           </label>
-          <div class="hint">本仓库已内置 <code>functions/api/proxy.js</code>，部署到 Cloudflare Pages 后此处填写你的线上地址。</div>
+          <div class="hint">示例：填入 <code>https://www.test.com</code>，保存后自动变为 <code>https://www.test.com/api/proxy</code>。本仓库已内置 <code>functions/api/proxy.js</code>，部署到 Cloudflare Pages 后即可使用。</div>
         </div>
         <div class="settings-grid">
           <div class="settings-left">

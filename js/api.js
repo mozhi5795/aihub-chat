@@ -63,9 +63,9 @@ const Api = (() => {
     }
 
     let resp;
-    const proxyUrl = (Store.loadSettings().proxyUrl || '').trim();
+    const proxyUrl = Store.normalizeProxyUrl(Store.loadSettings().proxyUrl || '');
     if (proxyUrl) {
-      resp = await fetch(proxyUrl.replace(/\/+$/, ''), {
+      resp = await fetch(proxyUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ targetUrl: requestUrl, method: 'POST', headers, body }),

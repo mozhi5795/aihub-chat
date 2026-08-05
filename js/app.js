@@ -415,7 +415,7 @@
   function openSettings() {
     state.editingProviderId = null;
     els.modal.classList.remove('hidden');
-    els.proxyUrl.value = state.settings.proxyUrl || '';
+    els.proxyUrl.value = Store.normalizeProxyUrl(state.settings.proxyUrl || '');
     renderProviderList();
     els.providerForm.reset();
     els.formTitle.textContent = '厂商配置';
@@ -599,7 +599,8 @@
   });
 
   els.proxyUrl.addEventListener('change', () => {
-    state.settings.proxyUrl = els.proxyUrl.value.trim();
+    state.settings.proxyUrl = Store.normalizeProxyUrl(els.proxyUrl.value);
+    els.proxyUrl.value = state.settings.proxyUrl;
     Store.saveSettings(state.settings);
     showToast('代理地址已保存');
   });
