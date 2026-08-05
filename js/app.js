@@ -52,6 +52,14 @@
   };
 
   const STREAM_TIMEOUT_MS = 90000;
+  const DOMAIN_RE = /^(?:localhost|(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,})(?::\d{1,5})?(?:\/[^\s]*)?$/;
+
+  function displayProxy(url) {
+    let s = (url || '').trim().replace(/\/+$/, '');
+    s = s.replace(/^https?:\/\//i, '');
+    s = s.replace(/\/api\/proxy$/i, '');
+    return s;
+  }
 
   // ---------- utils ----------
   function uid() {
@@ -497,7 +505,7 @@
   function openSettings() {
     state.editingProviderId = null;
     els.modal.classList.remove('hidden');
-    els.proxyUrl.value = Store.normalizeProxyUrl(state.settings.proxyUrl || '');
+    els.proxyUrl.value = displayProxy(state.settings.proxyUrl || '');
     renderProviderList();
     els.providerForm.reset();
     els.formTitle.textContent = '厂商配置';
@@ -697,7 +705,26 @@
   });
 
   els.proxyUrl.addEventListener('change', () => {
-    state.settings.proxyUrl = Store.normalizeProxyUrl(els.proxyUrl.value);
+    const raw = els.proxyUrl.value.trim();
+    if (!raw) {
+      state.settings.proxyUrl = '';
+      Store.saveSettings(state.settings);
+      showToast('代理地址已清空（直连厂商）');
+      return;
+    }
+    if (/^https?:\/\//i.test(raw)) {
+      showToast('格式不对：前面不需要 https://，直接填域名，例如 www.test.com', true);
+      return;
+    }
+    if (/\/+$/.test(raw)) {
+      showToast('格式不对：后面不需要 /', true);
+      return;
+    }
+    if (!DOMAIN_RE.test(raw) || /\s/.test(raw)) {
+      showToast('格式不对：请输入有效域名，例如 www.test.com', true);
+      return;
+    }
+    state.settings.proxyUrl = Store.normalizeProxyUrl(raw);
     els.proxyUrl.value = state.settings.proxyUrl;
     Store.saveSettings(state.settings);
     showToast('代理地址已保存');

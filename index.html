@@ -65,10 +65,10 @@
       </div>
       <div class="modal-body">
         <div class="proxy-bar">
-          <label>代理地址（可选，用于解决跨域 CORS。只需粘贴你的网站地址，自动补全 <code>/api/proxy</code>）
-            <input type="text" id="proxy-url" placeholder="例如：https://www.test.com">
+          <label>代理地址（可选，用于解决跨域 CORS。直接填域名即可，自动补全 https:// 和 <code>/api/proxy</code>）
+            <input type="text" id="proxy-url" placeholder="例如：www.test.com">
           </label>
-          <div class="hint">示例：填入 <code>https://www.test.com</code>，保存后自动变为 <code>https://www.test.com/api/proxy</code>。本仓库已内置 <code>functions/api/proxy.js</code>，部署到 Cloudflare Pages 后即可使用。</div>
+          <div class="hint">示例：填入 <code>www.test.com</code>，保存后自动变为 <code>https://www.test.com/api/proxy</code>。前面不需要 <code>https://</code>，后面不需要 <code>/</code>。本仓库已内置 <code>functions/api/proxy.js</code>，部署到 Cloudflare Pages 后即可使用。</div>
         </div>
         <div class="settings-grid">
           <div class="settings-left">
