@@ -201,7 +201,7 @@ body {
   font-weight: 600;
 }
 
-.message.user { justify-content: flex-end; }
+.message.user { flex-direction: row-reverse; }
 .message.user .avatar { background: var(--user-bubble); }
 .message.ai .avatar { background: #10a37f; }
 .message.error .avatar { background: var(--danger); }
