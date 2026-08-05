@@ -19,6 +19,11 @@
     btnStop: $('#btn-stop'),
     btnClearChat: $('#btn-clear-chat'),
     composerStatus: $('#composer-status'),
+    btnPrompts: $('#btn-prompts'),
+    promptPopover: $('#prompt-popover'),
+    promptNewText: $('#prompt-new-text'),
+    btnPromptSave: $('#btn-prompt-save'),
+    promptList: $('#prompt-list'),
     modal: $('#settings-modal'),
     btnCloseSettings: $('#btn-close-settings'),
     providerList: $('#provider-list'),
@@ -43,6 +48,7 @@
     editingProviderId: null,
     abortController: null,
     streaming: false,
+    prompts: Store.loadPrompts(),
   };
 
   const STREAM_TIMEOUT_MS = 90000;
@@ -392,6 +398,82 @@
     els.messageInput.style.height = Math.min(els.messageInput.scrollHeight, 160) + 'px';
   }
 
+  // ---------- prompts ----------
+  function persistPrompts() {
+    Store.savePrompts(state.prompts);
+  }
+
+  function renderPrompts() {
+    els.promptList.innerHTML = '';
+    if (!state.prompts.length) {
+      const div = document.createElement('div');
+      div.className = 'prompt-empty';
+      div.textContent = '还没有预设提示词，在上方输入后保存';
+      els.promptList.appendChild(div);
+      return;
+    }
+    state.prompts.forEach((p) => {
+      const li = document.createElement('li');
+      li.className = 'prompt-item';
+      li.title = p.content;
+
+      const span = document.createElement('span');
+      span.className = 'prompt-name';
+      span.textContent = p.name || p.content;
+
+      const del = document.createElement('button');
+      del.className = 'prompt-del';
+      del.textContent = '×';
+      del.title = '删除';
+      del.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deletePrompt(p.id);
+      });
+
+      li.appendChild(span);
+      li.appendChild(del);
+      li.addEventListener('click', () => usePrompt(p.content));
+      els.promptList.appendChild(li);
+    });
+  }
+
+  function togglePrompts() {
+    const hidden = els.promptPopover.classList.contains('hidden');
+    renderPrompts();
+    els.promptPopover.classList.toggle('hidden', !hidden);
+    if (!hidden && !els.promptNewText.value.trim()) els.promptNewText.focus();
+  }
+
+  function addPrompt() {
+    const text = els.promptNewText.value.trim();
+    if (!text) return;
+    const name = text.split('\n')[0].slice(0, 30);
+    state.prompts.push({ id: uid(), name, content: text });
+    persistPrompts();
+    els.promptNewText.value = '';
+    renderPrompts();
+    els.promptNewText.focus();
+    showToast('已保存提示词');
+  }
+
+  function deletePrompt(id) {
+    state.prompts = state.prompts.filter((p) => p.id !== id);
+    persistPrompts();
+    renderPrompts();
+  }
+
+  function usePrompt(content) {
+    els.messageInput.value = content;
+    autosizeInput();
+    els.messageInput.focus();
+    els.messageInput.setSelectionRange(content.length, content.length);
+    closePrompts();
+  }
+
+  function closePrompts() {
+    els.promptPopover.classList.add('hidden');
+  }
+
   // ---------- settings ----------
   function renderProviderList() {
     els.providerList.innerHTML = '';
@@ -580,6 +662,22 @@
       conv.updatedAt = Date.now();
       persist();
       renderMessageList();
+    }
+  });
+
+  els.btnPrompts.addEventListener('click', togglePrompts);
+  els.btnPromptSave.addEventListener('click', addPrompt);
+  els.promptNewText.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addPrompt();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (!els.promptPopover.classList.contains('hidden') &&
+        !els.promptPopover.contains(e.target) &&
+        e.target !== els.btnPrompts) {
+      closePrompts();
     }
   });
 

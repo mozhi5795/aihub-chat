@@ -5,6 +5,7 @@ const Store = {
     settings: 'aihub.settings',
     conversations: 'aihub.conversations',
     activeId: 'aihub.activeId',
+    prompts: 'aihub.prompts',
   },
 
   defaultSettings() {
@@ -60,6 +61,21 @@ const Store = {
     else localStorage.removeItem(this.KEYS.activeId);
   },
 
+  loadPrompts() {
+    try {
+      const raw = localStorage.getItem(this.KEYS.prompts);
+      if (!raw) return [];
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  savePrompts(prompts) {
+    localStorage.setItem(this.KEYS.prompts, JSON.stringify(prompts));
+  },
+
   normalizeProxyUrl(url) {
     let s = (url || '').trim().replace(/\/+$/, '');
     if (!s) return '';
@@ -70,10 +86,11 @@ const Store = {
   exportAll() {
     return {
       app: 'aihub-chat',
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       settings: this.loadSettings(),
       conversations: this.loadConversations(),
+      prompts: this.loadPrompts(),
     };
   },
 
@@ -83,6 +100,7 @@ const Store = {
     const settings = data.settings || this.defaultSettings();
     this.saveSettings(settings);
     this.saveConversations(data.conversations);
+    this.savePrompts(Array.isArray(data.prompts) ? data.prompts : []);
     this.setActiveId(null);
     return true;
   },

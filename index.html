@@ -39,8 +39,16 @@
 
       <footer id="composer">
         <div id="composer-status" class="composer-status"></div>
+        <div id="prompt-popover" class="prompt-popover hidden">
+          <div class="prompt-new">
+            <input type="text" id="prompt-new-text" placeholder="输入提示词，回车保存">
+            <button id="btn-prompt-save" class="btn small primary">保存</button>
+          </div>
+          <ul id="prompt-list" class="prompt-list"></ul>
+        </div>
         <textarea id="message-input" rows="1" placeholder="输入消息，Enter 发送，Shift+Enter 换行"></textarea>
         <div class="composer-actions">
+          <button id="btn-prompts" class="btn ghost small">预设</button>
           <button id="btn-clear-chat" class="btn ghost small">清空</button>
           <button id="btn-stop" class="btn danger small" hidden>停止</button>
           <button id="btn-send" class="btn primary">发送</button>
